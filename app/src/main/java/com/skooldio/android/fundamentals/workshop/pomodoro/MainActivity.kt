@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.skooldio.android.fundamentals.workshop.pomodoro.config.PomodoroConfig
+import com.skooldio.android.fundamentals.workshop.pomodoro.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     // Requester for permission requesting
@@ -31,13 +32,73 @@ class MainActivity : AppCompatActivity() {
         private const val LONG_BREAK_DURATION_MAX = PomodoroConfig.LONG_BREAK_DURATION_MAX
     }
 
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
+
+    private var workDuration:Int = WORK_DURATION_DEFAULT
+    private var shortBreakDuration:Int = SHORT_BREAK_DURATION_DEFAULT
+    private var longBreakDuration:Int = LONG_BREAK_DURATION_DEFAULT
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         // Additional code to support new permission in Android 13
         // Leave this code on the last line of the method
         requestPostNotificationPermission()
+
+        setupView()
+    }
+
+    private fun setupView() {
+        updateWorkDuration()
+        updateShortBreakDuration()
+        updateLongBreakDuration()
+
+        binding.buttonAddWorkDuration.setOnClickListener { // ปุ่มเพิ่มเวลา "ทำงาน"
+            workDuration += 5
+            workDuration = workDuration.coerceIn(WORK_DURATION_MIN, WORK_DURATION_MAX)
+            updateWorkDuration()
+        }
+        binding.buttonReduceWorkDuration.setOnClickListener { // ปุ่มลดเวลา "ทำงาน"
+            workDuration -= 5
+            workDuration = workDuration.coerceIn(WORK_DURATION_MIN, WORK_DURATION_MAX)
+            updateWorkDuration()
+        }
+        binding.buttonAddShortBreakDuration.setOnClickListener { // ปุ่มเพิ่มเวลา "พักน้อย"
+            shortBreakDuration += 5
+            shortBreakDuration = shortBreakDuration.coerceIn(SHORT_BREAK_DURATION_MIN, SHORT_BREAK_DURATION_MAX)
+            updateShortBreakDuration()
+        }
+        binding.buttonReduceShortBreakDuration.setOnClickListener { // ปุ่มลดเวลา "พักน้อย"
+            shortBreakDuration -= 5
+            shortBreakDuration = shortBreakDuration.coerceIn(SHORT_BREAK_DURATION_MIN, SHORT_BREAK_DURATION_MAX)
+            updateShortBreakDuration()
+        }
+        binding.buttonAddLongBreakDuration.setOnClickListener { // ปุ่มเพิ่มเวลา "พักใหญ่"
+            longBreakDuration += 5
+            longBreakDuration = longBreakDuration.coerceIn(LONG_BREAK_DURATION_MIN, LONG_BREAK_DURATION_MAX)
+            updateLongBreakDuration()
+        }
+        binding.buttonReduceLongBreakDuration.setOnClickListener { // ปุ่มลดเวลา "พักใหญ่"
+            longBreakDuration -= 5
+            longBreakDuration = longBreakDuration.coerceIn(LONG_BREAK_DURATION_MIN, LONG_BREAK_DURATION_MAX)
+            updateLongBreakDuration()
+        }
+        binding.buttonReady.setOnClickListener {
+
+        }
+    }
+
+    private fun updateWorkDuration() {
+        binding.textViewWorkDuration.text = getString(R.string.duration_value, workDuration)
+    }
+    private fun updateShortBreakDuration() {
+        binding.textViewShortDuration.text = getString(R.string.duration_value, shortBreakDuration)
+    }
+    private fun updateLongBreakDuration() {
+        binding.textViewLongDuration.text = getString(R.string.duration_value, longBreakDuration)
     }
 
     // Check and request post notification permission for Android 13 or higher
